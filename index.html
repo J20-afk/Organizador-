@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
@@ -112,7 +112,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Ocultar el reproductor de YouTube real detrás de la pantalla */
         #yt-player {
             position: absolute;
             width: 1px;
@@ -125,7 +124,6 @@
 <body>
 
     <canvas id="c"></canvas>
-
     <div id="yt-player"></div>
 
     <div class="top-image">
@@ -155,7 +153,6 @@
         const points = [];
         const TOTAL = 150;
 
-        // Cargar la API oficial de YouTube de fondo
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
@@ -168,12 +165,12 @@
             player = new YT.Player('yt-player', {
                 height: '1',
                 width: '1',
-                videoId: 'M7-P0Gbe2jE', // ID de Vámonos a Marte en YouTube
+                videoId: 'h8nS6k_f-H8', // ID REAL DE KEVIN KAARL - VÁMONOS A MARTE
                 playerVars: {
                     'autoplay': 0,
                     'controls': 0,
                     'loop': 1,
-                    'playlist': 'M7-P0Gbe2jE'
+                    'playlist': 'h8nS6k_f-H8'
                 },
                 events: {
                     'onReady': onPlayerReady
@@ -182,7 +179,7 @@
         }
 
         function onPlayerReady(event) {
-            // El reproductor está listo de fondo
+            // Listo
         }
 
         playBtn.addEventListener("click", () => {
@@ -254,4 +251,5 @@
         resize(); animate();
     </script>
 </body>
-</html>  
+</html>
+
