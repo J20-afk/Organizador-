@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -128,20 +127,17 @@
         }
     </style>
 </head>
-
 <body>
 
     <canvas id="c"></canvas>
 
     <div class="top-image">
-        <img src="https://i.pinimg.com/736x/a7/a1/80/a7a180e8c8f2979245d3df096a235263.jpg" alt="Imagen decorativa" />
+        <img src="https://i.pinimg.com/736x/a7/a1/80/a7a180e8c8f2979245d3df096a235263.jpg" alt="Imagen" />
     </div>
 
-    <div class="info">
-        ❤️ I LOVE YOU ❤️
-    </div>
+    <div class="info">❤️ I LOVE YOU ❤️</div>
 
-    <div class="music-player" aria-label="Reproductor de música">
+    <div class="music-player">
         <button id="playBtn" type="button">▶</button>
         <div class="track">
             <div class="title">Eres todo para mi y lo unico que quiero! 🚀</div>
@@ -154,7 +150,7 @@
     </div>
 
     <audio id="music" preload="auto" loop>
-        <source src="https://github.com/J20-afk/Organizador/raw/refs/heads/main/vamonos-a-marte.mp3" type="audio/mpeg" />
+        <source src="https://archive.org/download/vamonos-a-marte/vamonos-a-marte.mp3" type="audio/mpeg" />
     </audio>
 
     <script>
@@ -168,223 +164,78 @@
 
         let W, H, CX, CY, SCALE;
         const DPR = Math.min(window.devicePixelRatio || 1, 2);
-
-        const words = ["I", "LOVE", "YOU"];
         const phrase = "i love you";
         const points = [];
         const TOTAL = 150;
 
         function resize() {
-            W = window.innerWidth;
-            H = window.innerHeight;
-
-            canvas.width = W * DPR;
-            canvas.height = H * DPR;
-
-            canvas.style.width = W + "px";
-            canvas.style.height = H + "px";
-
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            W = window.innerWidth; H = window.innerHeight;
+            canvas.width = W * DPR; canvas.height = H * DPR;
+            canvas.style.width = W + "px"; canvas.style.height = H + "px";
             ctx.scale(DPR, DPR);
-
-            CX = W / 2;
-            CY = H / 2 + 20;
-
+            CX = W / 2; CY = H / 2 + 20;
             SCALE = Math.min(W, H) * 0.014;
-
             buildPoints();
         }
 
         function heart(t) {
-            const x = 16 * Math.pow(Math.sin(t), 3);
-
-            const y =
-                13 * Math.cos(t) -
-                5 * Math.cos(2 * t) -
-                2 * Math.cos(3 * t) -
-                Math.cos(4 * t);
-
-            return {
-                x: x * SCALE,
-                y: -y * SCALE
-            };
+            return { x: 16 * Math.pow(Math.sin(t), 3) * SCALE, y: -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * SCALE };
         }
 
         function buildPoints() {
             points.length = 0;
-
             for (let i = 0; i < TOTAL; i++) {
                 const t = (Math.PI * 2 * i) / TOTAL;
-                const p = heart(t);
-
-                points.push({
-                    x: p.x,
-                    y: p.y,
-                    offset: Math.random() * Math.PI * 2
-                });
+                points.push({ ...heart(t), offset: Math.random() * Math.PI * 2 });
             }
         }
 
         function drawWord(word, x, y, time) {
             const pulse = Math.sin(time * 2) * 2;
-
-            ctx.save();
-            ctx.translate(x, y);
-
-            const fontSize = 11 + pulse;
-
+            ctx.save(); ctx.translate(x, y);
             for (let s = 3; s >= 0; s--) {
-                ctx.shadowBlur = s * 8;
-                ctx.shadowColor = `rgba(255, 80, 150, ${0.7 - s * 0.15})`;
-
-                ctx.font = `${fontSize + s}px Arial`;
-                ctx.fillStyle =
-                    s === 0
-                        ? "white"
-                        : `rgba(255, 100, 160, 0.35)`;
-
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-
+                ctx.shadowBlur = s * 8; ctx.shadowColor = `rgba(255, 80, 150, ${0.7 - s * 0.15})`;
+                ctx.font = `${11 + pulse + s}px Arial`;
+                ctx.fillStyle = s === 0 ? "white" : `rgba(255, 100, 160, 0.35)`;
+                ctx.textAlign = "center"; ctx.textBaseline = "middle";
                 ctx.fillText(word, 0, 0);
             }
-
             ctx.restore();
         }
 
-        function drawHeartLineGlow() {
-            ctx.beginPath();
-
-            for (let i = 0; i < points.length; i++) {
-                const p = points[i];
-
-                const x = CX + p.x;
-                const y = CY + p.y;
-
-                if (i === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            }
-
-            ctx.closePath();
-
-            ctx.strokeStyle = "rgba(255, 50, 120, 0.25)";
-            ctx.lineWidth = 2;
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = "#ff4fa0";
-
-            ctx.stroke();
-        }
-
         function animate(time = 0) {
-            time *= 0.001;
-
-            ctx.clearRect(0, 0, W, H);
-
-            drawHeartLineGlow();
+            time *= 0.001; ctx.clearRect(0, 0, W, H);
+            ctx.beginPath();
+            for (let i = 0; i < points.length; i++) {
+                const x = CX + points[i].x, y = CY + points[i].y;
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.closePath(); ctx.strokeStyle = "rgba(255, 50, 120, 0.25)"; ctx.lineWidth = 2; ctx.stroke();
 
             for (let i = 0; i < points.length; i++) {
-                const p = points[i];
-
-                const wave =
-                    Math.sin(time * 2 + p.offset) * 4;
-
-                const x = CX + p.x;
-                const y = CY + p.y + wave;
-
-                drawWord(phrase, x, y, time);
-
-                if (i % 10 === 0) {
-                    drawWord(phrase, x + 8, y - 6, time);
-                }
+                const wave = Math.sin(time * 2 + points[i].offset) * 4;
+                drawWord(phrase, CX + points[i].x, CY + points[i].y + wave, time);
             }
-
             requestAnimationFrame(animate);
         }
 
-        function formatTime(seconds) {
-            if (!Number.isFinite(seconds) || seconds < 0) {
-                return "0:00";
-            }
-
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, "0");
-            return `${minutes}:${remainingSeconds}`;
-        }
+        function formatTime(s) { return Number.isFinite(s) && s >= 0 ? `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, "0")}` : "0:00"; }
 
         playBtn.addEventListener("click", async () => {
-            if (music.paused) {
-                try {
-                    await music.play();
-                    playBtn.textContent = "❚❚";
-                } catch (error) {
-                    playBtn.textContent = "▶";
-                }
-            } else {
-                music.pause();
-                playBtn.textContent = "▶";
-            }
+            if (music.paused) { try { await music.play(); } catch (e) {} } else { music.pause(); }
         });
 
-        music.addEventListener("loadedmetadata", () => {
-            duration.textContent = formatTime(music.duration);
-        });
-
+        music.addEventListener("loadedmetadata", () => { duration.textContent = formatTime(music.duration); });
         music.addEventListener("timeupdate", () => {
             currentTime.textContent = formatTime(music.currentTime);
-
-            if (Number.isFinite(music.duration) && music.duration > 0) {
-                progress.value = Math.floor((music.currentTime / music.duration) * 1000);
-            }
+            if (music.duration) progress.value = Math.floor((music.currentTime / music.duration) * 1000);
         });
-
-        progress.addEventListener("input", () => {
-            if (Number.isFinite(music.duration) && music.duration > 0) {
-                music.currentTime = (progress.value / 1000) * music.duration;
-            }
-        });
-
-        music.addEventListener("play", () => {
-            playBtn.textContent = "❚❚";
-        });
-
-        music.addEventListener("pause", () => {
-            playBtn.textContent = "▶";
-        });
-
-        music.addEventListener("ended", () => {
-            playBtn.textContent = "▶";
-        });
+        progress.addEventListener("input", () => { if (music.duration) music.currentTime = (progress.value / 1000) * music.duration; });
+        music.addEventListener("play", () => playBtn.textContent = "❚❚");
+        music.addEventListener("pause", () => playBtn.textContent = "▶");
 
         window.addEventListener("resize", resize);
-
-        resize();
-        animate();
-
-        music.play().then(() => {
-            playBtn.textContent = "❚❚";
-        }).catch(() => {
-            playBtn.textContent = "▶";
-        });
+        resize(); animate();
     </script>
-
 </body>
 </html>
-
-```
-### Paso 2: Subir el código a tu GitHub Organizador
-Haremos que GitHub hospede tu página web para que la puedas abrir directamente en Chrome y la música suene de inmediato sin errores.
- 1. Abre GitHub.com en tu celular y entra a tu repositorio llamado **Organizador**.
- 2. Toca los tres puntitos ... (o el botón que dice **Add file**) arriba a la derecha y selecciona **Create new file** (Crear nuevo archivo).
- 3. En el nombre del archivo escribe exactamente:
-   ```text
-   index.html
-   
-   
-   
-   ```
-```
-
-```
