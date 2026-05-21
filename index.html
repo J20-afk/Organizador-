@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
@@ -112,18 +112,13 @@
             text-overflow: ellipsis;
         }
 
-        .music-player .bar {
-            width: 100%;
-            accent-color: #ff79b2;
-            cursor: pointer;
-        }
-
-        .music-player .time {
-            display: flex;
-            justify-content: space-between;
-            color: rgba(255, 180, 205, 0.85);
-            font-size: 11px;
-            font-family: monospace;
+        /* Ocultar el reproductor de YouTube real detrás de la pantalla */
+        #yt-player {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -131,42 +126,78 @@
 
     <canvas id="c"></canvas>
 
+    <div id="yt-player"></div>
+
     <div class="top-image">
         <img src="https://i.pinimg.com/736x/a7/a1/80/a7a180e8c8f2979245d3df096a235263.jpg" alt="Imagen" />
     </div>
 
-    <div class="info">❤️ I LOVE YOU ❤️</div>
+    <div class="info">HNOS ❤️ J & A ❤️ POR SIEMPRE</div>
 
     <div class="music-player">
         <button id="playBtn" type="button">▶</button>
         <div class="track">
-            <div class="title">Eres todo para mi y lo unico que quiero! 🚀</div>
-            <input id="progress" class="bar" type="range" min="0" max="1000" value="0" />
-            <div class="time">
-                <span id="currentTime">0:00</span>
-                <span id="duration">0:00</span>
+            <div class="title">Vámonos a Marte - Kevin Kaarl 🚀</div>
+            <div style="color: rgba(255, 180, 205, 0.85); font-size: 11px; text-align: center; margin-top: 4px;">
+                ¡Toca Play para activar la música!
             </div>
         </div>
     </div>
 
-    <audio id="music" preload="auto" loop>
-        <source src="https://archive.org/download/vamonos-a-marte/vamonos-a-marte.mp3" type="audio/mpeg" />
-    </audio>
-
     <script>
         const canvas = document.getElementById("c");
         const ctx = canvas.getContext("2d");
-        const music = document.getElementById("music");
         const playBtn = document.getElementById("playBtn");
-        const progress = document.getElementById("progress");
-        const currentTime = document.getElementById("currentTime");
-        const duration = document.getElementById("duration");
 
         let W, H, CX, CY, SCALE;
         const DPR = Math.min(window.devicePixelRatio || 1, 2);
         const phrase = "i love you";
         const points = [];
         const TOTAL = 150;
+
+        // Cargar la API oficial de YouTube de fondo
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        let player;
+        let isPlaying = false;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                height: '1',
+                width: '1',
+                videoId: 'M7-P0Gbe2jE', // ID de Vámonos a Marte en YouTube
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'M7-P0Gbe2jE'
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // El reproductor está listo de fondo
+        }
+
+        playBtn.addEventListener("click", () => {
+            if (!player || typeof player.playVideo !== 'function') return;
+
+            if (!isPlaying) {
+                player.playVideo();
+                playBtn.textContent = "❚❚";
+                isPlaying = true;
+            } else {
+                player.pauseVideo();
+                playBtn.textContent = "▶";
+                isPlaying = false;
+            }
+        });
 
         function resize() {
             W = window.innerWidth; H = window.innerHeight;
@@ -219,23 +250,8 @@
             requestAnimationFrame(animate);
         }
 
-        function formatTime(s) { return Number.isFinite(s) && s >= 0 ? `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, "0")}` : "0:00"; }
-
-        playBtn.addEventListener("click", async () => {
-            if (music.paused) { try { await music.play(); } catch (e) {} } else { music.pause(); }
-        });
-
-        music.addEventListener("loadedmetadata", () => { duration.textContent = formatTime(music.duration); });
-        music.addEventListener("timeupdate", () => {
-            currentTime.textContent = formatTime(music.currentTime);
-            if (music.duration) progress.value = Math.floor((music.currentTime / music.duration) * 1000);
-        });
-        progress.addEventListener("input", () => { if (music.duration) music.currentTime = (progress.value / 1000) * music.duration; });
-        music.addEventListener("play", () => playBtn.textContent = "❚❚");
-        music.addEventListener("pause", () => playBtn.textContent = "▶");
-
         window.addEventListener("resize", resize);
         resize(); animate();
     </script>
 </body>
-</html>
+</html>  
